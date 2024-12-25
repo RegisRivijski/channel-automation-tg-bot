@@ -14,7 +14,7 @@ module.exports = {
     return [
       {
         name: 'genshinMemesProcessor',
-        schedule: '30 */4 * * *',
+        schedule: '30 9,13,17,21 * * *',
         process: subRedditProcessor.postToChannel({
           bot,
           channelId: CHANNEL_ID,
@@ -23,7 +23,7 @@ module.exports = {
       },
       {
         name: 'genshinWallpapersProcessor',
-        schedule: '0 7-23 * * *',
+        schedule: '0 8,12,18,22 * * *',
         process: subRedditProcessor.postToChannel({
           bot,
           channelId: CHANNEL_ID,
@@ -32,7 +32,7 @@ module.exports = {
       },
       {
         name: 'genshinPhotoProcessor',
-        schedule: '15 7-23/4 * * *',
+        schedule: '15 10,14,18,20 * * *',
         process: subRedditProcessor.postToChannel({
           bot,
           channelId: CHANNEL_ID,
