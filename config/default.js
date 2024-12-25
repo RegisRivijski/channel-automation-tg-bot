@@ -14,7 +14,7 @@ module.exports = {
     password: process.env.REDDIT_PASSWORD,
   },
   bot: {
-    apiToken: process.env.CHANNEL_AUTOMATION_BOT_API_TOKEN
+    apiToken: process.env.CHANNEL_AUTOMATION_BOT_API_TOKEN,
   },
   telegramBotApi: {
     protocol: process.env.TELEGRAM_BOT_API_PROTOCOL,
