@@ -18,7 +18,7 @@ module.exports = {
   }) {
     return async (job, done) => {
       try {
-        const promocode = promocodeHelper.getRandomPromocode();
+        const promocode = `PROMO_${promocodeHelper.getRandomPromocode()}`;
         const maxUsers = numbersHelper.getRandomNumberInRange(
           GACHA_SIMULATOR_PROMO_MIN_USERS,
           GACHA_SIMULATOR_PROMO_MAX_USERS,

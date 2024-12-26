@@ -12,7 +12,6 @@
     "agenda": "^5.0.0",
     "axios": "^1.7.9",
     "mongoose": "^8.9.2",
-    "nanoid": "^5.0.9",
     "snoowrap": "^1.23.0",
     "telegraf": "^4.16.3"
   },
