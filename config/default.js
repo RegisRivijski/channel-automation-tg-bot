@@ -42,4 +42,11 @@ module.exports = {
       },
     },
   },
+  rest: {
+    gachaSimulatorRest: {
+      apiKey: process.env.GACHA_SIMULATOR_REST_API_KEY,
+      port: process.env.GACHA_SIMULATOR_REST_PORT,
+      host: process.env.GACHA_SIMULATOR_REST_HOST,
+    },
+  },
 };

@@ -7,6 +7,7 @@ const {
   SUBREDDIT_GENSHIN_PHOTOGRAPHY,
 } = require('../constants/reddit');
 
+const promocodeProcessor = require('../processors/promocodeProcessor');
 const subRedditProcessor = require('../processors/subRedditProcessor');
 
 module.exports = {
@@ -37,6 +38,14 @@ module.exports = {
           bot,
           channelId: CHANNEL_ID,
           subreddit: SUBREDDIT_GENSHIN_PHOTOGRAPHY,
+        }),
+      },
+      {
+        name: 'generateAndPublishPromo',
+        schedule: '0 20 */3 * *',
+        process: promocodeProcessor.generateAndPublishPromo({
+          bot,
+          channelId: CHANNEL_ID,
         }),
       },
     ];
