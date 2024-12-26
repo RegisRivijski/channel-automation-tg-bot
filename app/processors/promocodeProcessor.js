@@ -53,6 +53,7 @@ module.exports = {
 
         await bot.telegram.sendMessage(channelId, message.trim(), {
           parse_mode: 'HTML',
+          disable_web_page_preview: true,
         });
 
         console.info(`[Promo Code] Promo code ${promocode} published in channel ${channelId}`);
