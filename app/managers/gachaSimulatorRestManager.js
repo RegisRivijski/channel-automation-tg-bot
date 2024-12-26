@@ -16,9 +16,11 @@ module.exports = {
     count,
   }) {
     return reqInstance.post(`${gachaSimulatorRestOrigin}/automation/promocodes`, {
-      promocode,
-      primogems,
-      count,
+      promocodeData: {
+        promocode,
+        primogems,
+        count,
+      },
     })
       .then(({ data }) => data);
   },
