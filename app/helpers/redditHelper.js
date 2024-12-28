@@ -11,18 +11,19 @@ module.exports = {
     return images[0]?.source?.url ?? '';
   },
 
-  covertImagesToMediaGroup(images, caption) {
-    const mediaGroup = [];
-    for (const image of images) {
-      if (image?.source?.url) {
-        mediaGroup.push({
+  mediaMetaDataToArray(mediaMetadata, caption) {
+    const mediaArray = [];
+    for (const media of Object.values(mediaMetadata)) {
+      const url = media?.s?.u;
+      if (url) {
+        mediaArray.push({
           type: 'photo',
-          media: image?.source?.url,
+          media: media?.s?.u,
           caption,
           parse_mode: 'HTML',
         });
       }
     }
-    return mediaGroup;
+    return mediaArray;
   },
 };

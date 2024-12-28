@@ -12,9 +12,8 @@ module.exports = {
     return async (job, done) => {
       try {
         const posts = await redditManager.getPostsFromReddit(subreddit, 50);
-        const arts = redditHelper.filterPostsWithImages(posts);
 
-        for await (const post of arts) {
+        for await (const post of posts) {
           const {
             id: postId,
             title,
@@ -23,12 +22,32 @@ module.exports = {
             over_18: over18,
             ups,
             num_comments: numComments,
+            media_metadata: mediaMetadata,
             preview: {
               images,
-            },
+            } = {},
           } = post;
 
+          const caption = '<a href="https://t.me/harmony_of_teyvat">🎴Гармония Тейвaта</a>';
+
+          let mediaArray = [];
+          let firstUrl = '';
+
+          if (mediaMetadata) {
+            mediaArray = redditHelper.mediaMetaDataToArray(mediaMetadata, caption);
+            firstUrl = mediaArray?.[0].media;
+          } else if (images) {
+            firstUrl = redditHelper.getFirstPhoto(images);
+          }
+
+          if (!firstUrl || !mediaArray?.length) {
+            console.info(`[Processor Info] Post with ID ${postId} has not media files. Skipping.`);
+            await job.touch();
+            continue;
+          }
+
           if (over18) {
+            console.info(`[Processor Info] Post with ID ${postId} over 18. Skipping.`);
             await job.touch();
             continue;
           }
@@ -40,27 +59,23 @@ module.exports = {
             continue;
           }
 
-          const caption = '<a href="https://t.me/harmony_of_teyvat">🎴Гармония Тейвaта</a>';
-          const url = redditHelper.getFirstPhoto(images);
-
-          if (images.length > 1) {
-            const mediaArray = redditHelper.covertImagesToMediaGroup(images, caption);
+          if (mediaArray.length > 1) {
             await bot.telegram.sendMediaGroup(channelId, mediaArray, {
               parse_mode: 'HTML',
             });
           } else {
-            await bot.telegram.sendPhoto(channelId, url, {
+            await bot.telegram.sendPhoto(channelId, firstUrl, {
               caption,
               parse_mode: 'HTML',
             });
-            console.info('url:', url);
+            console.info('firstUrl:', firstUrl);
           }
 
           console.info(`[Processor Info] Sent post with ID ${postId} to channel.`);
 
           await redditPostManager.addPost({
             postId,
-            url,
+            url: firstUrl,
             title,
             author: author?.name || '',
             subreddit,
