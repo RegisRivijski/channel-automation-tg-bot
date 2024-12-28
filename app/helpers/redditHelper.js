@@ -6,4 +6,23 @@ module.exports = {
 
     return artPosts;
   },
+
+  getFirstPhoto(images) {
+    return images[0]?.source?.url ?? '';
+  },
+
+  covertImagesToMediaGroup(images, caption) {
+    const mediaGroup = [];
+    for (const image of images) {
+      if (image?.source?.url) {
+        mediaGroup.push({
+          type: 'photo',
+          media: image?.source?.url,
+          caption,
+          parse_mode: 'HTML',
+        });
+      }
+    }
+    return mediaGroup;
+  },
 };

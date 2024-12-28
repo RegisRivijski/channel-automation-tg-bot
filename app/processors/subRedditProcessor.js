@@ -28,8 +28,6 @@ module.exports = {
             },
           } = post;
 
-          const url = images[0]?.source?.url;
-
           if (over18) {
             await job.touch();
             continue;
@@ -43,13 +41,20 @@ module.exports = {
           }
 
           const caption = '<a href="https://t.me/harmony_of_teyvat">🎴Гармония Тейвaта</a>';
+          const url = redditHelper.getFirstPhoto(images);
 
-          console.info('url:', url);
-
-          await bot.telegram.sendPhoto(channelId, url, {
-            caption,
-            parse_mode: 'HTML',
-          });
+          if (images.length > 1) {
+            const mediaArray = redditHelper.covertImagesToMediaGroup(images, caption);
+            await bot.telegram.sendMediaGroup(channelId, mediaArray, {
+              parse_mode: 'HTML',
+            });
+          } else {
+            await bot.telegram.sendPhoto(channelId, url, {
+              caption,
+              parse_mode: 'HTML',
+            });
+            console.info('url:', url);
+          }
 
           console.info(`[Processor Info] Sent post with ID ${postId} to channel.`);
 
