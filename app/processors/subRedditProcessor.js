@@ -61,6 +61,7 @@ module.exports = {
 
           if (mediaArray.length > 1) {
             await bot.telegram.sendMediaGroup(channelId, mediaArray, {
+              caption,
               parse_mode: 'HTML',
             });
           } else {
