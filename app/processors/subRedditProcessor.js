@@ -28,7 +28,7 @@ module.exports = {
             },
           } = post;
 
-          if (over18 && images.length === 1) {
+          if (over18) {
             await job.touch();
             continue;
           }
