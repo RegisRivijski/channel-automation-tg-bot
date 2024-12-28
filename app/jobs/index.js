@@ -42,7 +42,7 @@ module.exports = {
       },
       {
         name: 'generateAndPublishPromo',
-        schedule: '0 20 */3 * *',
+        schedule: '0 20 3,6,9,12,15,18,21,24,27,30 * *',
         process: promocodeProcessor.generateAndPublishPromo({
           bot,
           channelId: CHANNEL_ID,
