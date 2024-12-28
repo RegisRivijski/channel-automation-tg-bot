@@ -40,7 +40,7 @@ module.exports = {
             firstUrl = redditHelper.getFirstPhoto(images);
           }
 
-          if (!firstUrl || !mediaArray?.length) {
+          if (!firstUrl && (!mediaArray || !mediaArray.length)) {
             console.info(`[Processor Info] Post with ID ${postId} has not media files. Skipping.`);
             await job.touch();
             continue;
