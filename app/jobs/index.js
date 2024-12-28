@@ -55,6 +55,7 @@ module.exports = {
     for await (const { name, schedule, process } of jobs) {
       agenda.define(name, process);
       await agenda.every(schedule, name);
+      console.info(`Cron ${name} ${schedule} is initialized!`);
     }
   },
 };
