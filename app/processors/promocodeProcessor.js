@@ -27,7 +27,7 @@ module.exports = {
         const primogemsReward = numbersHelper.getRandomNumberInRange(
           GACHA_SIMULATOR_PROMO_MIN_PRIMOGEMS,
           GACHA_SIMULATOR_PROMO_MAX_PRIMOGEMS,
-          500,
+          100,
         );
 
         await gachaSimulatorRestManager.createNewPromocode({
