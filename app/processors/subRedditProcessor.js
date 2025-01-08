@@ -46,12 +46,6 @@ module.exports = {
             continue;
           }
 
-          if (over18) {
-            console.info(`[Processor Info] Post with ID ${postId} over 18. Skipping.`);
-            await job.touch();
-            continue;
-          }
-
           const exists = await redditPostManager.isPostExists(postId);
           if (exists) {
             console.info(`[Processor Info] Post with ID ${postId} already exists. Skipping.`);
