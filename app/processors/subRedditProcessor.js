@@ -11,7 +11,7 @@ module.exports = {
   }) {
     return async (job, done) => {
       try {
-        let after = null; // Идентификатор последнего поста для пагинации
+        let after = null;
         let foundPost = false;
 
         while (!foundPost) {
