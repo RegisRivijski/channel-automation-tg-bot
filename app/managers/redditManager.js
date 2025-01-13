@@ -1,9 +1,11 @@
 const RedditSingleton = require('../classes/RedditSingleton');
 
 module.exports = {
-  getPostsFromReddit(subredditName, limit) {
-    return RedditSingleton
-      .getSubreddit(subredditName)
-      .getHot({ limit });
+  async getPostsFromReddit(subredditName, limit, after) {
+    const options = { limit };
+    if (after) options.after = after;
+
+    const subreddit = await RedditSingleton.getSubreddit(subredditName);
+    return subreddit.getHot(options);
   },
 };

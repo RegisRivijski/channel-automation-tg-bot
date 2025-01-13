@@ -11,76 +11,97 @@ module.exports = {
   }) {
     return async (job, done) => {
       try {
-        const posts = await redditManager.getPostsFromReddit(subreddit, 50);
+        let after = null; // Идентификатор последнего поста для пагинации
+        let foundPost = false;
 
-        for await (const post of posts) {
-          const {
-            id: postId,
-            title,
-            author,
-            created_utc: createdUtc,
-            over_18: over18,
-            ups,
-            num_comments: numComments,
-            media_metadata: mediaMetadata,
-            preview: {
-              images,
-            } = {},
-          } = post;
+        while (!foundPost) {
+          const posts = await redditManager.getPostsFromReddit(subreddit, 50, after);
 
-          const caption = '<a href="https://t.me/harmony_of_teyvat">🎴Гармония Тейвaта</a>';
-
-          let mediaArray = [];
-          let firstUrl = '';
-
-          if (mediaMetadata) {
-            mediaArray = redditHelper.mediaMetaDataToArray(mediaMetadata, caption);
-            firstUrl = mediaArray?.[0].media;
-          } else if (images) {
-            firstUrl = redditHelper.getFirstPhoto(images);
+          if (!posts.length) {
+            console.info(`[Processor Info] No more posts to fetch from subreddit ${subreddit}.`);
+            break;
           }
 
-          if (!firstUrl && (!mediaArray || !mediaArray.length)) {
-            console.info(`[Processor Info] Post with ID ${postId} has not media files. Skipping.`);
-            await job.touch();
-            continue;
-          }
+          for await (const post of posts) {
+            const {
+              id: postId,
+              title,
+              author,
+              created_utc: createdUtc,
+              over_18: over18,
+              ups,
+              num_comments: numComments,
+              media_metadata: mediaMetadata,
+              preview: {
+                images,
+              } = {},
+            } = post;
 
-          const exists = await redditPostManager.isPostExists(postId);
-          if (exists) {
-            console.info(`[Processor Info] Post with ID ${postId} already exists. Skipping.`);
-            await job.touch();
-            continue;
-          }
+            const caption = '<a href="https://t.me/harmony_of_teyvat">🎴Гармония Тейвата</a>';
 
-          if (mediaArray.length > 1) {
-            await bot.telegram.sendMediaGroup(channelId, mediaArray, {
-              caption,
-              parse_mode: 'HTML',
+            let mediaArray = [];
+            let firstUrl = '';
+
+            if (mediaMetadata) {
+              mediaArray = redditHelper.mediaMetaDataToArray(mediaMetadata, caption);
+              firstUrl = mediaArray?.[0].media;
+            } else if (images) {
+              firstUrl = redditHelper.getFirstPhoto(images);
+            }
+
+            if (!firstUrl && (!mediaArray || !mediaArray.length)) {
+              console.info(`[Processor Info] Post with ID ${postId} has no media files. Skipping.`);
+              await job.touch();
+              continue;
+            }
+
+            const exists = await redditPostManager.isPostExists(postId);
+            if (exists) {
+              console.info(`[Processor Info] Post with ID ${postId} already exists. Skipping.`);
+              await job.touch();
+              continue;
+            }
+
+            if (mediaArray.length > 1) {
+              await bot.telegram.sendMediaGroup(channelId, mediaArray, {
+                caption,
+                parse_mode: 'HTML',
+              });
+            } else {
+              await bot.telegram.sendPhoto(channelId, firstUrl, {
+                caption,
+                parse_mode: 'HTML',
+              });
+              console.info('firstUrl:', firstUrl);
+            }
+
+            console.info(`[Processor Info] Sent post with ID ${postId} to channel.`);
+
+            await redditPostManager.addPost({
+              postId,
+              url: firstUrl,
+              title,
+              author: author?.name || '',
+              subreddit,
+              createdAt: new Date(createdUtc * 1000),
+              over18,
+              upvotes: ups,
+              commentsCount: numComments,
             });
-          } else {
-            await bot.telegram.sendPhoto(channelId, firstUrl, {
-              caption,
-              parse_mode: 'HTML',
-            });
-            console.info('firstUrl:', firstUrl);
+
+            foundPost = true;
+            break;
           }
 
-          console.info(`[Processor Info] Sent post with ID ${postId} to channel.`);
+          after = posts[posts.length - 1]?.name;
 
-          await redditPostManager.addPost({
-            postId,
-            url: firstUrl,
-            title,
-            author: author?.name || '',
-            subreddit,
-            createdAt: new Date(createdUtc * 1000),
-            over18,
-            upvotes: ups,
-            commentsCount: numComments,
-          });
+          if (!foundPost) {
+            console.info('[Processor Info] No suitable post found in current batch. Fetching more posts...');
+          }
+        }
 
-          break;
+        if (!foundPost) {
+          console.info(`[Processor Info] No suitable post found for subreddit ${subreddit}.`);
         }
       } catch (e) {
         console.error('[FATAL ERROR] Job - postToChannel:', e.message);
