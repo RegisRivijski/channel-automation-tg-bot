@@ -15,6 +15,7 @@ module.exports = {
         let foundPost = false;
 
         while (!foundPost) {
+          // eslint-disable-next-line no-await-in-loop
           const posts = await redditManager.getPostsFromReddit(subreddit, 50, after);
 
           if (!posts.length) {
@@ -22,6 +23,7 @@ module.exports = {
             break;
           }
 
+          // eslint-disable-next-line no-await-in-loop
           for await (const post of posts) {
             const {
               id: postId,
